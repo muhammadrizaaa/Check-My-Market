@@ -35,12 +35,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.riza0004.checkmymarket.R
+import com.riza0004.checkmymarket.navigation.Screen
 import com.riza0004.checkmymarket.ui.theme.CheckMyMarketTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainHomeScreen(){
+fun MainHomeScreen(navHostController: NavHostController){
     var expanded by remember { mutableStateOf(false) }
     val context = LocalContext.current
     Scaffold(
@@ -73,11 +76,7 @@ fun MainHomeScreen(){
                                 },
                                 onClick = {
                                     expanded = false
-                                    Toast.makeText(
-                                        context,
-                                        "Add Product",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
+                                    navHostController.navigate(Screen.AddProduct.route)
                                 }
                             )
                             DropdownMenuItem(
@@ -131,8 +130,7 @@ fun HomeScreenContent(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Absolute.SpaceBetween
             ) {
-                Column(
-                ) {
+                Column {
                     Text(
                         "Aqua 150 ml",
                         style = MaterialTheme.typography.titleLarge,
@@ -174,6 +172,6 @@ fun HomeScreenContent(
 @Composable
 fun GreetingPreview() {
     CheckMyMarketTheme {
-        MainHomeScreen()
+        MainHomeScreen(navHostController = rememberNavController())
     }
 }

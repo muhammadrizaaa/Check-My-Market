@@ -8,7 +8,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.riza0004.checkmymarket.ui.screen.MainHomeScreen
+import com.riza0004.checkmymarket.navigation.SetupNavGraph
 import com.riza0004.checkmymarket.ui.theme.CheckMyMarketTheme
 
 class MainActivity : ComponentActivity() {
@@ -17,7 +17,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             CheckMyMarketTheme {
-                MainHomeScreen()
+                SetupNavGraph()
             }
         }
     }
