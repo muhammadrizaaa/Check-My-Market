@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">Check My Market</string>
+
+<!--    For expandable dropdown in home screen-->
+    <string name="more">More Button</string>
+    <string name="add_product">Add Product</string>
+    <string name="about_this_app">About This App</string>
+
+<!--    HomeScreen content-->
+    <string name="products_list">Products List</string>
+    <string name="add_to_cart">Add To Cart Button</string>
 </resources>
