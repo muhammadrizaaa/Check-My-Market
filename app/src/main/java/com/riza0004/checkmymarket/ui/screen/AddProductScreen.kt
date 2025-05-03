@@ -23,23 +23,31 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.riza0004.checkmymarket.R
 import com.riza0004.checkmymarket.ui.theme.CheckMyMarketTheme
+import com.riza0004.checkmymarket.util.ViewModelFactory
+import com.riza0004.checkmymarket.viewmodel.ProductViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainAddProductScreen(navHostController: NavHostController){
+    val context = LocalContext.current
+    val factory = ViewModelFactory(context)
+    val viewModel: ProductViewModel = viewModel(factory = factory)
     var productName by remember { mutableStateOf("") }
     var productPrice by remember { mutableStateOf("") }
     var productStock by remember { mutableStateOf("") }
+    var productDesc by remember { mutableStateOf("") }
     var productNameIsErr by remember { mutableStateOf(false) }
     var productPriceIsErr by remember { mutableStateOf(false) }
     var productStockIsErr by remember { mutableStateOf(false) }
@@ -72,6 +80,12 @@ fun MainAddProductScreen(navHostController: NavHostController){
                             productPriceIsErr = productPrice.isBlank()
                             productStockIsErr = productStock.isBlank()
                             if(!productNameIsErr && !productPriceIsErr && !productStockIsErr){
+                                viewModel.insert(
+                                    name = productName,
+                                    price = productPrice.toInt(),
+                                    stock = productStock.toLong(),
+                                    desc = productDesc
+                                )
                                 navHostController.popBackStack()
                             }
                         }
@@ -130,11 +144,23 @@ fun MainAddProductScreen(navHostController: NavHostController){
                 onValueChange = {productStock = it},
                 isError = productStockIsErr,
                 keyboardOptions = KeyboardOptions(
-                    imeAction = ImeAction.Done
+                    imeAction = ImeAction.Done,
+                    keyboardType = KeyboardType.Number
                 ),
                 supportingText = {
                     TextFieldErrMessage(productStockIsErr, stringResource(R.string.product_stock_label))
                 }
+            )
+            OutlinedTextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = productDesc,
+                label = {
+                    Text(stringResource(R.string.product_desc_label))
+                },
+                onValueChange = {productDesc = it},
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Done
+                )
             )
         }
     }
