@@ -126,7 +126,7 @@ fun CustomerScreenContent(
             ) {
                 items(data){data->
                     ListCustomer(data){ id->
-                        navHostController.navigate(Screen.DetailProduct.withId(id))
+                        navHostController.navigate(Screen.DetailCustomer.withId(id))
                     }
                 }
             }

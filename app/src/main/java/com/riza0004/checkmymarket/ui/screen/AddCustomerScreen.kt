@@ -1,12 +1,15 @@
 package com.riza0004.checkmymarket.ui.screen
 
 import android.content.res.Configuration
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -17,6 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,12 +31,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.riza0004.checkmymarket.R
+import com.riza0004.checkmymarket.ui.component.DeleteDialog
 import com.riza0004.checkmymarket.ui.theme.CheckMyMarketTheme
 import com.riza0004.checkmymarket.util.ViewModelFactory
 import com.riza0004.checkmymarket.viewmodel.CustomerViewModel
@@ -47,12 +53,26 @@ fun MainAddCustomerScreen(navHostController: NavHostController, id: Long? = null
     val viewModel: CustomerViewModel = viewModel(factory = factory)
     var name by remember { mutableStateOf("") }
     var phoneNum by remember { mutableStateOf("") }
+    var onInsert by remember { mutableStateOf("") }
     var nameIsErr by remember { mutableStateOf(false) }
+    var showDialog by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        if(id==null)return@LaunchedEffect
+        val data = viewModel.getCustomer(id) ?: return@LaunchedEffect
+        name = data.name
+        phoneNum = data.phoneNum
+        onInsert = data.onInsert
+    }
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(stringResource(R.string.add_customer))
+                    if(id == null){
+                        Text(stringResource(R.string.add_customer))
+                    }
+                    else{
+                        Text(stringResource(R.string.edit_customer))
+                    }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -74,11 +94,24 @@ fun MainAddCustomerScreen(navHostController: NavHostController, id: Long? = null
                         onClick = {
                             nameIsErr = name.isBlank()
                             if(!nameIsErr){
-                                viewModel.insert(
-                                    name = name,
-                                    phoneNum = phoneNum
-                                )
-                                navHostController.popBackStack()
+                                if(id!=null){
+                                    viewModel.update(
+                                        id = id,
+                                        name = name,
+                                        phoneNum = phoneNum,
+                                        onCreate = onInsert
+                                    )
+                                    Toast.makeText(context, R.string.customer_edited, Toast.LENGTH_SHORT).show()
+                                    navHostController.popBackStack()
+                                }
+                                else{
+                                    viewModel.insert(
+                                        name = name,
+                                        phoneNum = phoneNum
+                                    )
+                                    Toast.makeText(context, R.string.customer_added, Toast.LENGTH_SHORT).show()
+                                    navHostController.popBackStack()
+                                }
                             }
                         }
                     ) {
@@ -87,6 +120,11 @@ fun MainAddCustomerScreen(navHostController: NavHostController, id: Long? = null
                             contentDescription = stringResource(R.string.add_customer),
                             tint = MaterialTheme.colorScheme.primary
                         )
+                    }
+                    if(id!=null){
+                        ShowDelete {
+                            showDialog = true
+                        }
                     }
                 }
             )
@@ -126,8 +164,21 @@ fun MainAddCustomerScreen(navHostController: NavHostController, id: Long? = null
                 },
                 onValueChange = {phoneNum = it},
                 keyboardOptions = KeyboardOptions(
-                    imeAction = ImeAction.Done
+                    imeAction = ImeAction.Done,
+                    keyboardType = KeyboardType.Number
                 )
+            )
+        }
+        if(showDialog && id!=null){
+            DeleteDialog(
+                onDismissReq = {showDialog = false},
+                onConfirmation = {
+                    viewModel.delete(id = id)
+                    showDialog = false
+                    navHostController.popBackStack()
+                    Toast.makeText(context, R.string.customer_deleted, Toast.LENGTH_SHORT).show()
+                },
+                name = name
             )
         }
     }

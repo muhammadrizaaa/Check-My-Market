@@ -75,7 +75,7 @@ fun MainListProductScreen(navHostController: NavHostController){
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    navHostController.navigate(Screen.AddCustomer.route)
+                    navHostController.navigate(Screen.AddProduct.route)
                 }
             ) {
                 Icon(
@@ -122,8 +122,8 @@ fun ProductScreenContent(modifier: Modifier, navHostController: NavHostControlle
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(data){data->
-                    ListProduct(data){
-
+                    ListProduct(data){id->
+                        navHostController.navigate(Screen.DetailProduct.withId(id))
                     }
                 }
             }
@@ -134,7 +134,7 @@ fun ProductScreenContent(modifier: Modifier, navHostController: NavHostControlle
 @Composable
 fun ListProduct(product: ProductDataClass, onClick: (id:Long) -> Unit){
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().clickable { onClick(product.id) },
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer
         )

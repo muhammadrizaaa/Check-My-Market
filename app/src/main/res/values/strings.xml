@@ -45,6 +45,12 @@
     <string name="add_customer">Add Customer</string>
     <string name="customer_name_label">Name</string>
     <string name="customer_phoneNum_label">Phone Number (Optional)</string>
+    <string name="customer_added">Customer Successfully Added!</string>
+
+<!--    EditCustomerScreen-->
+    <string name="edit_customer">Edit Customer</string>
+    <string name="customer_edited">Customer Successfully Edited!</string>
+    <string name="customer_deleted">Customer Successfully Deleted!</string>
 
 <!--    error message-->
     <string name="error_message_with_label">Please fill the %1$s field first</string>

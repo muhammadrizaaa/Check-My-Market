@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.riza0004.checkmymarket.ui.screen.KEY_ID_Customer
 import com.riza0004.checkmymarket.ui.screen.KEY_ID_PRODUCT
 import com.riza0004.checkmymarket.ui.screen.MainAddCustomerScreen
 import com.riza0004.checkmymarket.ui.screen.MainAddProductScreen
@@ -53,6 +54,15 @@ fun SetupNavGraph(navHostController: NavHostController = rememberNavController()
             route = Screen.AddCustomer.route
         ) {
             MainAddCustomerScreen(navHostController)
+        }
+        composable(
+            route = Screen.DetailCustomer.route,
+            arguments = listOf(
+                navArgument(KEY_ID_Customer) {type = NavType.LongType}
+            )
+        ) {navBackStackEntry ->
+            val id = navBackStackEntry.arguments?.getLong(KEY_ID_Customer)
+            MainAddCustomerScreen(navHostController, id)
         }
     }
 }
