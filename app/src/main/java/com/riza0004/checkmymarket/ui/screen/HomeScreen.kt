@@ -90,6 +90,15 @@ fun MainHomeScreen(navHostController: NavHostController){
                             )
                             DropdownMenuItem(
                                 text = {
+                                    Text(stringResource(R.string.list_customer_screen))
+                                },
+                                onClick = {
+                                    expanded = false
+                                    navHostController.navigate(Screen.ListCustomer.route)
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = {
                                     Text(stringResource(R.string.about_this_app))
                                 },
                                 onClick = {

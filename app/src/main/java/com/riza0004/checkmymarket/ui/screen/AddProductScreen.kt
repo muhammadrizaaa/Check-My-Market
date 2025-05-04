@@ -42,7 +42,6 @@ import com.riza0004.checkmymarket.ui.component.DeleteDialog
 import com.riza0004.checkmymarket.ui.theme.CheckMyMarketTheme
 import com.riza0004.checkmymarket.util.ViewModelFactory
 import com.riza0004.checkmymarket.viewmodel.ProductViewModel
-import kotlin.math.exp
 
 const val KEY_ID_PRODUCT = "idProduct"
 
@@ -195,7 +194,7 @@ fun MainAddProductScreen(navHostController: NavHostController, id:Long? = null){
                 onValueChange = {productStock = it},
                 isError = productStockIsErr,
                 keyboardOptions = KeyboardOptions(
-                    imeAction = ImeAction.Done,
+                    imeAction = ImeAction.Next,
                     keyboardType = KeyboardType.Number
                 ),
                 supportingText = {

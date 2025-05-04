@@ -9,4 +9,6 @@ sealed class Screen(val route: String) {
     data object DetailProduct: Screen("detailProductScreen/{$KEY_ID_PRODUCT}"){
         fun withId(id: Long) = "detailProductScreen/$id"
     }
+    data object ListCustomer: Screen("listCustomerScreen")
+    data object AddCustomer: Screen("addCustomerScreen")
 }

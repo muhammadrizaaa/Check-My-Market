@@ -37,6 +37,15 @@
     <string name="onInsert_product">onInsert: %1$s</string>
     <string name="onUpdate_product">onUpdate: %1$s</string>
 
+<!--    ListCustomerScreen-->
+    <string name="list_customer_screen">Customers</string>
+    <string name="empty_data_customer">Data customers still empty</string>
+
+<!--    AddCustomerScreen-->
+    <string name="add_customer">Add Customer</string>
+    <string name="customer_name_label">Name</string>
+    <string name="customer_phoneNum_label">Phone Number (Optional)</string>
+
 <!--    error message-->
     <string name="error_message_with_label">Please fill the %1$s field first</string>
     <string name="error_message_without_label">Please fill the empty field first</string>

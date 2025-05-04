@@ -38,21 +38,21 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.riza0004.checkmymarket.R
-import com.riza0004.checkmymarket.dataclass.ProductDataClass
+import com.riza0004.checkmymarket.dataclass.CustomerDataClass
 import com.riza0004.checkmymarket.navigation.Screen
 import com.riza0004.checkmymarket.ui.theme.CheckMyMarketTheme
 import com.riza0004.checkmymarket.util.ViewModelFactory
-import com.riza0004.checkmymarket.viewmodel.ProductViewModel
+import com.riza0004.checkmymarket.viewmodel.CustomerViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainListProductScreen(navHostController: NavHostController){
+fun MainListCustomerScreen(navHostController: NavHostController){
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
                     Text(
-                        text = stringResource(R.string.list_product_screen)
+                        text = stringResource(R.string.list_customer_screen)
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -80,12 +80,12 @@ fun MainListProductScreen(navHostController: NavHostController){
             ) {
                 Icon(
                     painter = painterResource(R.drawable.baseline_add_24),
-                    contentDescription = stringResource(R.string.add_product)
+                    contentDescription = stringResource(R.string.add_customer)
                 )
             }
         }
     ) { innerPadding->
-        ProductScreenContent(
+        CustomerScreenContent(
             modifier = Modifier.padding(innerPadding),
             navHostController = navHostController
         )
@@ -93,10 +93,13 @@ fun MainListProductScreen(navHostController: NavHostController){
 }
 
 @Composable
-fun ProductScreenContent(modifier: Modifier, navHostController: NavHostController){
+fun CustomerScreenContent(
+    modifier: Modifier,
+    navHostController: NavHostController
+){
     val context = LocalContext.current
     val factory = ViewModelFactory(context)
-    val viewModel: ProductViewModel = viewModel(factory = factory)
+    val viewModel: CustomerViewModel = viewModel(factory = factory)
     val data by viewModel.data.collectAsState()
     Column(
         modifier = modifier.fillMaxSize().padding(8.dp),
@@ -104,13 +107,13 @@ fun ProductScreenContent(modifier: Modifier, navHostController: NavHostControlle
         verticalArrangement = Arrangement.Top
     ) {
         Text(
-            text = stringResource(R.string.products_list),
+            text = stringResource(R.string.list_customer_screen),
             style = MaterialTheme.typography.headlineLarge,
             fontWeight = FontWeight.Bold
         )
         if(data.isEmpty()){
             Text(
-                text = stringResource(R.string.empty_data_product),
+                text = stringResource(R.string.empty_data_customer),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )
@@ -122,8 +125,8 @@ fun ProductScreenContent(modifier: Modifier, navHostController: NavHostControlle
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(data){data->
-                    ListProduct(data){
-
+                    ListCustomer(data){ id->
+                        navHostController.navigate(Screen.DetailProduct.withId(id))
                     }
                 }
             }
@@ -132,9 +135,9 @@ fun ProductScreenContent(modifier: Modifier, navHostController: NavHostControlle
 }
 
 @Composable
-fun ListProduct(product: ProductDataClass, onClick: (id:Long) -> Unit){
+fun ListCustomer(customer: CustomerDataClass, onClick:(id: Long) -> Unit){
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().clickable { onClick(customer.id) },
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer
         )
@@ -146,36 +149,26 @@ fun ListProduct(product: ProductDataClass, onClick: (id:Long) -> Unit){
         ) {
             Column {
                 Text(
-                    product.name,
+                    customer.name,
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Medium,
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 1
                 )
                 Text(
-                    product.desc,
+                    customer.phoneNum,
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Medium,
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 3
                 )
                 Text(
-                    stringResource(R.string.stock_product, product.stock),
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Medium
-                )
-                Text(
-                    product.price.toString(),
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Medium
-                )
-                Text(
-                    stringResource(R.string.onInsert_product, product.onInsert),
+                    stringResource(R.string.onInsert_product, customer.onInsert),
                     style = MaterialTheme.typography.bodySmall,
                     fontWeight = FontWeight.Thin
                 )
                 Text(
-                    stringResource(R.string.onUpdate_product, product.onUpdate),
+                    stringResource(R.string.onUpdate_product, customer.onUpdate),
                     style = MaterialTheme.typography.bodySmall,
                     fontWeight = FontWeight.Thin
                 )
@@ -184,10 +177,11 @@ fun ListProduct(product: ProductDataClass, onClick: (id:Long) -> Unit){
     }
 }
 
+
 @Preview(showBackground = true)
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
 @Composable
-fun ListProductScreenPreview() {
+fun ListCustomerScreenPreview() {
     CheckMyMarketTheme {
         MainListCustomerScreen(navHostController = rememberNavController())
     }
