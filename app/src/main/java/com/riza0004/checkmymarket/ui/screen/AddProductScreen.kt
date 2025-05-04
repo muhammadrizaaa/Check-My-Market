@@ -17,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,9 +39,11 @@ import com.riza0004.checkmymarket.ui.theme.CheckMyMarketTheme
 import com.riza0004.checkmymarket.util.ViewModelFactory
 import com.riza0004.checkmymarket.viewmodel.ProductViewModel
 
+const val KEY_ID_PRODUCT = "idProduct"
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainAddProductScreen(navHostController: NavHostController){
+fun MainAddProductScreen(navHostController: NavHostController, id:Long? = null){
     val context = LocalContext.current
     val factory = ViewModelFactory(context)
     val viewModel: ProductViewModel = viewModel(factory = factory)
@@ -48,20 +51,38 @@ fun MainAddProductScreen(navHostController: NavHostController){
     var productPrice by remember { mutableStateOf("") }
     var productStock by remember { mutableStateOf("") }
     var productDesc by remember { mutableStateOf("") }
+    var onInsert by remember { mutableStateOf("") }
     var productNameIsErr by remember { mutableStateOf(false) }
     var productPriceIsErr by remember { mutableStateOf(false) }
     var productStockIsErr by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        if(id==null)return@LaunchedEffect
+        val data = viewModel.getProduct(id) ?: return@LaunchedEffect
+        productName = data.name
+        productPrice = data.price.toString()
+        productStock = data.stock.toString()
+        productDesc = data.desc
+        onInsert = data.onInsert
+    }
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(
-                        text = stringResource(R.string.add_product_screen)
-                    )
+                    if(id==null){
+                        Text(
+                            text = stringResource(R.string.add_product_screen)
+                        )
+                    }
+                    else{
+                        Text(
+                            text = stringResource(R.string.edit_product)
+                        )
+                    }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.primary
+                    titleContentColor = MaterialTheme.colorScheme.primary,
+                    navigationIconContentColor = MaterialTheme.colorScheme.primary
                 ),
                 navigationIcon = {
                     IconButton(
@@ -80,13 +101,26 @@ fun MainAddProductScreen(navHostController: NavHostController){
                             productPriceIsErr = productPrice.isBlank()
                             productStockIsErr = productStock.isBlank()
                             if(!productNameIsErr && !productPriceIsErr && !productStockIsErr){
-                                viewModel.insert(
-                                    name = productName,
-                                    price = productPrice.toInt(),
-                                    stock = productStock.toLong(),
-                                    desc = productDesc
-                                )
-                                navHostController.popBackStack()
+                                if(id!=null){
+                                    viewModel.update(
+                                        id = id,
+                                        name = productName,
+                                        desc = productDesc,
+                                        price = productPrice.toInt(),
+                                        stock = productStock.toLong(),
+                                        onInsert = onInsert
+                                    )
+                                    navHostController.popBackStack()
+                                }
+                                else{
+                                    viewModel.insert(
+                                        name = productName,
+                                        price = productPrice.toInt(),
+                                        stock = productStock.toLong(),
+                                        desc = productDesc
+                                    )
+                                    navHostController.popBackStack()
+                                }
                             }
                         }
                     ) {

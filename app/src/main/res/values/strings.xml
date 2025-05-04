@@ -4,12 +4,10 @@
 <!--TopBar text-->
     <string name="add_product_screen">Add Product</string>
     <string name="more">More Button</string>
-    <string name="add_product">Add Product</string>
     <string name="about_this_app">About This App</string>
     <string name="back_button">Back Button</string>
 
 <!--    HomeScreen content-->
-    <string name="products_list">Products List</string>
     <string name="add_to_cart">Add To Cart Button</string>
     <string name="empty_data_product">Data products still empty</string>
 
@@ -19,6 +17,17 @@
     <string name="product_price_label">Product Price</string>
     <string name="product_stock_label">Product Stock</string>
     <string name="product_desc_label">Product Description (Optional)</string>
+
+<!--    EditProductScreen-->
+    <string name="edit_product">Edit Product</string>
+
+<!--    ListProductScreen-->
+    <string name="list_product_screen">Products</string>
+    <string name="products_list">Products List</string>
+    <string name="add_product">Add Product</string>
+    <string name="stock_product">Stock: %1$d units</string>
+    <string name="onInsert_product">onInsert: %1$s</string>
+    <string name="onUpdate_product">onUpdate: %1$s</string>
 
 <!--    error message-->
     <string name="error_message_with_label">Please fill the %1$s field first</string>
