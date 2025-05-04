@@ -17,9 +17,17 @@
     <string name="product_price_label">Product Price</string>
     <string name="product_stock_label">Product Stock</string>
     <string name="product_desc_label">Product Description (Optional)</string>
+    <string name="product_added">Product Successfully Added!</string>
 
 <!--    EditProductScreen-->
     <string name="edit_product">Edit Product</string>
+    <string name="product_edited">Product Successfully Edited!</string>
+
+<!--    DeleteDialog-->
+    <string name="delete_msg">Are you sure you want to delete %1$s?</string>
+    <string name="delete_btn">Delete</string>
+    <string name="cancel_btn">Cancel</string>
+    <string name="product_deleted">Product Successfully Deleted!</string>
 
 <!--    ListProductScreen-->
     <string name="list_product_screen">Products</string>

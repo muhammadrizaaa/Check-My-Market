@@ -1,12 +1,15 @@
 package com.riza0004.checkmymarket.ui.screen
 
 import android.content.res.Configuration
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -35,9 +38,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.riza0004.checkmymarket.R
+import com.riza0004.checkmymarket.ui.component.DeleteDialog
 import com.riza0004.checkmymarket.ui.theme.CheckMyMarketTheme
 import com.riza0004.checkmymarket.util.ViewModelFactory
 import com.riza0004.checkmymarket.viewmodel.ProductViewModel
+import kotlin.math.exp
 
 const val KEY_ID_PRODUCT = "idProduct"
 
@@ -55,6 +60,7 @@ fun MainAddProductScreen(navHostController: NavHostController, id:Long? = null){
     var productNameIsErr by remember { mutableStateOf(false) }
     var productPriceIsErr by remember { mutableStateOf(false) }
     var productStockIsErr by remember { mutableStateOf(false) }
+    var showDialog by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         if(id==null)return@LaunchedEffect
         val data = viewModel.getProduct(id) ?: return@LaunchedEffect
@@ -110,6 +116,7 @@ fun MainAddProductScreen(navHostController: NavHostController, id:Long? = null){
                                         stock = productStock.toLong(),
                                         onInsert = onInsert
                                     )
+                                    Toast.makeText(context, R.string.product_edited, Toast.LENGTH_SHORT).show()
                                     navHostController.popBackStack()
                                 }
                                 else{
@@ -119,6 +126,7 @@ fun MainAddProductScreen(navHostController: NavHostController, id:Long? = null){
                                         stock = productStock.toLong(),
                                         desc = productDesc
                                     )
+                                    Toast.makeText(context, R.string.product_added, Toast.LENGTH_SHORT).show()
                                     navHostController.popBackStack()
                                 }
                             }
@@ -126,15 +134,24 @@ fun MainAddProductScreen(navHostController: NavHostController, id:Long? = null){
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.baseline_check_24),
-                            contentDescription = stringResource(R.string.more)
+                            contentDescription = stringResource(R.string.more),
+                            tint = MaterialTheme.colorScheme.primary
                         )
+                    }
+                    if(id!=null){
+                        ShowDelete {
+                            showDialog = true
+                        }
                     }
                 }
             )
         }
     ) { innerPadding->
         Column(
-            modifier = Modifier.padding(innerPadding).fillMaxSize().padding(horizontal = 16.dp),
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize()
+                .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(2.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -197,6 +214,18 @@ fun MainAddProductScreen(navHostController: NavHostController, id:Long? = null){
                 )
             )
         }
+        if(showDialog && id!=null){
+            DeleteDialog(
+                onDismissReq = {showDialog = false},
+                onConfirmation = {
+                    viewModel.delete(id = id)
+                    showDialog = false
+                    navHostController.popBackStack()
+                    Toast.makeText(context, R.string.product_deleted, Toast.LENGTH_SHORT).show()
+                },
+                name = productName
+            )
+        }
     }
 }
 
@@ -208,6 +237,34 @@ fun TextFieldErrMessage(isError: Boolean, label: String = ""){
         }
         else{
             Text(stringResource(R.string.error_message_with_label, label))
+        }
+    }
+}
+
+@Composable
+fun ShowDelete(onDelete:()->Unit){
+    var expanded by remember { mutableStateOf(false) }
+    IconButton(
+        onClick = {expanded = true}
+    ) {
+        Icon(
+            painter = painterResource(R.drawable.baseline_more_vert_24),
+            contentDescription = stringResource(R.string.more),
+            tint = MaterialTheme.colorScheme.primary
+        )
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            DropdownMenuItem(
+                text = {
+                    Text(stringResource(R.string.delete_btn))
+                },
+                onClick = {
+                    expanded = false
+                    onDelete()
+                }
+            )
         }
     }
 }

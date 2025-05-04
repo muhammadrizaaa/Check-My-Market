@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.riza0004.checkmymarket.database.ProductDao
 import com.riza0004.checkmymarket.dataclass.ProductDataClass
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -19,18 +18,6 @@ class ProductViewModel(private val dao: ProductDao):ViewModel() {
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(),
         initialValue = emptyList()
-    )
-
-    val dataDummy: StateFlow<List<ProductDataClass>> = MutableStateFlow(
-        listOf(
-            ProductDataClass(
-                name = "Aqua",
-                price = 4000,
-                stock = 5,
-                onInsert = "2020-05-12 12:12:12",
-                onUpdate = "2020-05-12 12:12:12"
-            )
-        )
     )
 
     private val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US)
@@ -55,7 +42,7 @@ class ProductViewModel(private val dao: ProductDao):ViewModel() {
         )
 
         viewModelScope.launch {
-            dao.insert(product)
+            dao.insertProduct(product)
         }
     }
     fun update(
@@ -76,7 +63,13 @@ class ProductViewModel(private val dao: ProductDao):ViewModel() {
             onUpdate = formatter.format(Date())
         )
         viewModelScope.launch(Dispatchers.IO) {
-            dao.update(product)
+            dao.updateProduct(product)
+        }
+    }
+
+    fun delete(id: Long){
+        viewModelScope.launch(Dispatchers.IO) {
+            dao.deleteProductById(id)
         }
     }
 }

@@ -11,14 +11,17 @@ import kotlinx.coroutines.flow.Flow
 interface ProductDao {
 
     @Insert
-    suspend fun insert(product: ProductDataClass)
+    suspend fun insertProduct(product: ProductDataClass)
 
     @Update
-    suspend fun update(product: ProductDataClass)
+    suspend fun updateProduct(product: ProductDataClass)
 
     @Query("SELECT * FROM product ORDER BY name ASC")
     fun getProduct():Flow<List<ProductDataClass>>
 
     @Query("SELECT * FROM product WHERE id = :id")
     suspend fun getProductById(id:Long): ProductDataClass?
+
+    @Query("DELETE FROM product WHERE id = :id")
+    suspend fun deleteProductById(id: Long)
 }
