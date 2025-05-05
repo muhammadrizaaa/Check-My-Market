@@ -10,6 +10,9 @@
 <!--    HomeScreen content-->
     <string name="add_to_cart">Add To Cart Button</string>
     <string name="empty_data_product">Data products still empty</string>
+    <string name="fab_cart">Floating Action Button to Cart screen</string>
+    <string name="minus_button">Minus Button</string>
+    <string name="plus_button">Plus Button</string>
 
 
 <!--    AddProductScreen-->

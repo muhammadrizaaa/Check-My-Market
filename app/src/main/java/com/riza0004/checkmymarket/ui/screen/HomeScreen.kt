@@ -1,22 +1,29 @@
 package com.riza0004.checkmymarket.ui.screen
 
+import android.annotation.SuppressLint
 import android.content.res.Configuration
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -27,33 +34,43 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.riza0004.checkmymarket.R
+import com.riza0004.checkmymarket.dataclass.CartDataClass
 import com.riza0004.checkmymarket.dataclass.ProductDataClass
 import com.riza0004.checkmymarket.navigation.Screen
 import com.riza0004.checkmymarket.ui.theme.CheckMyMarketTheme
 import com.riza0004.checkmymarket.util.ViewModelFactory
 import com.riza0004.checkmymarket.viewmodel.ProductViewModel
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainHomeScreen(navHostController: NavHostController){
-    var expanded by remember { mutableStateOf(false) }
     val context = LocalContext.current
+    val factory = ViewModelFactory(context)
+    val viewModel: ProductViewModel = viewModel(factory = factory)
+    var expanded by remember { mutableStateOf(false) }
+    val cart by viewModel.cart.collectAsState()
     Scaffold(
         topBar = {
             TopAppBar(
@@ -114,11 +131,48 @@ fun MainHomeScreen(navHostController: NavHostController){
                     }
                 }
             )
+        },
+        floatingActionButton = {
+            if(cart.isNotEmpty()){
+                Box {
+                    FloatingActionButton(
+                        onClick = { /* handle click */ }
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.baseline_add_shopping_cart_24),
+                            contentDescription = stringResource(R.string.fab_cart)
+                        )
+                    }
+
+                    // Badge
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .offset(x = 6.dp, y = (-6).dp)
+                            .size(18.dp)
+                            .background(MaterialTheme.colorScheme.onPrimaryContainer, shape = CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = cart.size.toString(), // Replace with your dynamic cart count
+                            color = MaterialTheme.colorScheme.primaryContainer,
+                            fontSize = 10.sp,
+                            textAlign = TextAlign.Center,
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                fontWeight = FontWeight.Bold
+                            ),
+                            modifier = Modifier.padding(0.dp)
+                        )
+                    }
+                }
+            }
         }
     ) { innerPadding->
         HomeScreenContent(
             modifier = Modifier.padding(innerPadding),
-            navHostController = navHostController
+            navHostController = navHostController,
+            viewModel = viewModel,
+            cart = cart
         )
     }
 }
@@ -126,11 +180,10 @@ fun MainHomeScreen(navHostController: NavHostController){
 @Composable
 fun HomeScreenContent(
     modifier: Modifier,
-    navHostController: NavHostController
+    navHostController: NavHostController,
+    viewModel: ProductViewModel,
+    cart: List<CartDataClass>
 ){
-    val context = LocalContext.current
-    val factory = ViewModelFactory(context)
-    val viewModel: ProductViewModel = viewModel(factory = factory)
     val data by viewModel.data.collectAsState()
     Column(
         modifier = modifier.fillMaxSize().padding(8.dp),
@@ -154,7 +207,11 @@ fun HomeScreenContent(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(data){data->
-                    ProductListHome(data){id->
+                    ProductListHome(
+                        product = data,
+                        viewModel = viewModel,
+                        cart = cart
+                        ){id->
                         navHostController.navigate(Screen.DetailProduct.withId(id))
                     }
                 }
@@ -164,7 +221,12 @@ fun HomeScreenContent(
 }
 
 @Composable
-fun ProductListHome(product: ProductDataClass, onClick: (id: Long) -> Unit){
+fun ProductListHome(
+    product: ProductDataClass,
+    viewModel: ProductViewModel,
+    cart: List<CartDataClass>,
+    onClick: (id: Long) -> Unit
+){
     val context = LocalContext.current
     Card(
         modifier = Modifier.fillMaxWidth().clickable { onClick(product.id) },
@@ -177,11 +239,15 @@ fun ProductListHome(product: ProductDataClass, onClick: (id: Long) -> Unit){
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Absolute.SpaceBetween
         ) {
-            Column {
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
                 Text(
                     product.name,
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Medium
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Medium,
+                    maxLines = 3,
+                    overflow = TextOverflow.Ellipsis
                 )
                 Text(
                     product.price.toString(),
@@ -194,20 +260,64 @@ fun ProductListHome(product: ProductDataClass, onClick: (id: Long) -> Unit){
                     fontWeight = FontWeight.Medium
                 )
             }
-            IconButton(
-                onClick = {
-                    Toast.makeText(context, "add to cart", Toast.LENGTH_SHORT).show()
-                },
-                colors = IconButtonDefaults.iconButtonColors(
-                    containerColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                    contentColor = MaterialTheme.colorScheme.primaryContainer
-                )
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.baseline_add_24),
-                    contentDescription = stringResource(R.string.add_to_cart),
-                    Modifier.size(48.dp)
-                )
+            if(cart.any{it.product == product}){
+                val singleCart by remember(cart) {
+                    derivedStateOf {
+                        cart.find { it.product.id == product.id }
+                    }
+                }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    IconButton(
+                        modifier = Modifier.size(24.dp),
+                        onClick = {viewModel.minQtyCart(product)},
+                        colors = IconButtonDefaults.iconButtonColors(
+                            containerColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                            contentColor = MaterialTheme.colorScheme.primaryContainer
+                        )
+                    ) {
+                        Icon(
+                            modifier = Modifier.size(16.dp),
+                            painter = painterResource(R.drawable.baseline_remove_24),
+                            contentDescription = stringResource(R.string.minus_button)
+                        )
+                    }
+                    Text("${singleCart?.qty ?: 0}")
+                    IconButton(
+                        modifier = Modifier.size(24.dp),
+                        onClick = {viewModel.plusQtyCart(product)},
+                        colors = IconButtonDefaults.iconButtonColors(
+                            containerColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                            contentColor = MaterialTheme.colorScheme.primaryContainer
+                        )
+                    ) {
+                        Icon(
+                            modifier = Modifier.size(16.dp),
+                            painter = painterResource(R.drawable.baseline_add_24),
+                            contentDescription = stringResource(R.string.plus_button)
+                        )
+                    }
+                }
+            }
+            else{
+                IconButton(
+                    onClick = {
+                        viewModel.addToCart(product = product, 1)
+                        Toast.makeText(context, "add to cart", Toast.LENGTH_SHORT).show()
+                    },
+                    colors = IconButtonDefaults.iconButtonColors(
+                        containerColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                        contentColor = MaterialTheme.colorScheme.primaryContainer
+                    )
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.baseline_add_24),
+                        contentDescription = stringResource(R.string.add_to_cart),
+                        Modifier.size(32.dp)
+                    )
+                }
             }
         }
     }
