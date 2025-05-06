@@ -133,7 +133,7 @@ fun MainAddProductScreen(navHostController: NavHostController, id:Long? = null){
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.baseline_check_24),
-                            contentDescription = stringResource(R.string.more),
+                            contentDescription = stringResource(R.string.confirm_button),
                             tint = MaterialTheme.colorScheme.primary
                         )
                     }
@@ -166,7 +166,7 @@ fun MainAddProductScreen(navHostController: NavHostController, id:Long? = null){
                     imeAction = ImeAction.Next
                 ),
                 supportingText = {
-                    TextFieldErrMessage(productNameIsErr, stringResource(R.string.product_name_label))
+                    TextFieldErrMessage(productNameIsErr, stringResource(R.string.error_message_with_label, stringResource(R.string.product_name_label)))
                 }
             )
             OutlinedTextField(
@@ -182,7 +182,7 @@ fun MainAddProductScreen(navHostController: NavHostController, id:Long? = null){
                     keyboardType = KeyboardType.Number
                 ),
                 supportingText = {
-                    TextFieldErrMessage(productPriceIsErr, stringResource(R.string.product_price_label))
+                    TextFieldErrMessage(productPriceIsErr, stringResource(R.string.error_message_with_label, stringResource(R.string.product_price_label)))
                 }
             )
             OutlinedTextField(
@@ -198,7 +198,7 @@ fun MainAddProductScreen(navHostController: NavHostController, id:Long? = null){
                     keyboardType = KeyboardType.Number
                 ),
                 supportingText = {
-                    TextFieldErrMessage(productStockIsErr, stringResource(R.string.product_stock_label))
+                    TextFieldErrMessage(productStockIsErr, stringResource(R.string.error_message_with_label, stringResource(R.string.product_stock_label)))
                 }
             )
             OutlinedTextField(
@@ -235,7 +235,7 @@ fun TextFieldErrMessage(isError: Boolean, label: String = ""){
             Text(stringResource(R.string.error_message_without_label))
         }
         else{
-            Text(stringResource(R.string.error_message_with_label, label))
+            Text(label)
         }
     }
 }

@@ -5,7 +5,8 @@
     <string name="add_product_screen">Add Product</string>
     <string name="more">More Button</string>
     <string name="about_this_app">About This App</string>
-    <string name="back_button">Back Button</string>
+    <string name="back_button">Arrow Back Button</string>
+    <string name="confirm_button">Confirm Button</string>
 
 <!--    HomeScreen content-->
     <string name="add_to_cart">Add To Cart Button</string>
@@ -55,7 +56,31 @@
     <string name="customer_edited">Customer Successfully Edited!</string>
     <string name="customer_deleted">Customer Successfully Deleted!</string>
 
+    <!--    CartScreen-->
+    <string name="cart_screen">Cart</string>
+    <string name="empty_cart">Cart Is Empty</string>
+    <string name="total_price">Total Price: Rp. %1$,d</string>
+    <string name="down_button">Arrow Down Button</string>
+    <string name="up_button">Arrow Down Button</string>
+    <string name="price_format">%1$,d</string>
+    <string name="customer_label">Customer: </string>
+    <string name="clear_btn">Clear Button</string>
+    <string name="cart_cleared">Cart has been cleared</string>
+    <string name="cash_received">Cash Received</string>
+
+    <!--    CartDialog-->
+    <string name="cart_purchase_dialog_title">Confirm Purchase</string>
+    <string name="cart_purchase_dialog_msg">Are you sure you want to proceed?</string>
+    <string name="cart_purchase_dialog_btn">Confirm</string>
+    <string name="cart_clear_dialog_title">Clear Cart</string>
+    <string name="cart_clear_dialog_msg">Are you sure you want to clear the cart?</string>
+    <string name="cart_clear_dialog_btn">Clear</string>
+    <string name="total_change">Total Change: Rp. %1$,d</string>
+    <string name="close_btn">Close</string>
+    <string name="success_cart_purchase_dialog_title">Purchase Successful</string>
+
 <!--    error message-->
     <string name="error_message_with_label">Please fill the %1$s field first</string>
     <string name="error_message_without_label">Please fill the empty field first</string>
+    <string name="cash_received_notEnough">Cash received is not enough.</string>
 </resources>

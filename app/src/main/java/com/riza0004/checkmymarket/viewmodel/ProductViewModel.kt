@@ -1,6 +1,5 @@
 package com.riza0004.checkmymarket.viewmodel
 
-import androidx.compose.runtime.State
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.riza0004.checkmymarket.database.ProductDao
@@ -84,24 +83,32 @@ class ProductViewModel(private val dao: ProductDao):ViewModel() {
     }
     fun addToCart(product: ProductDataClass, qty: Int){
         _cart.value += CartDataClass(
+            num = (_cart.value.size + 1),
             product = product,
             qty = qty,
-            totalPrice = (product.price * qty)
+            totalPrice = product.price
         )
     }
-    fun removeFromCart(cart: CartDataClass){
-        _cart.value -= cart
-    }
+
     fun plusQtyCart(product: ProductDataClass){
         _cart.value = _cart.value.map {
-            if(it.product == product) it.copy(qty = it.qty+1) else it
+            if(it.product == product) it.copy(
+                qty = it.qty+1,
+                totalPrice = product.price * (it.qty + 1)
+            ) else it
         }
+    }
+    fun clearCart(){
+        _cart.value = emptyList()
     }
     fun minQtyCart(product: ProductDataClass){
         _cart.value = _cart.value.mapNotNull {
             when {
                 it.product == product && it.qty == 1 -> null
-                it.product == product -> it.copy(qty = it.qty - 1)
+                it.product == product -> it.copy(
+                    qty = it.qty-1,
+                    totalPrice = product.price * (it.qty - 1)
+                )
                 else -> it
             }
         }

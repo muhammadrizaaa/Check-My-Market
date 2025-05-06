@@ -8,8 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -117,7 +115,7 @@ fun MainAddCustomerScreen(navHostController: NavHostController, id: Long? = null
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.baseline_check_24),
-                            contentDescription = stringResource(R.string.add_customer),
+                            contentDescription = stringResource(R.string.confirm_button),
                             tint = MaterialTheme.colorScheme.primary
                         )
                     }
@@ -152,7 +150,7 @@ fun MainAddCustomerScreen(navHostController: NavHostController, id: Long? = null
                 supportingText = {
                     TextFieldErrMessage(
                         nameIsErr,
-                        stringResource(R.string.customer_name_label)
+                        stringResource(R.string.error_message_with_label, stringResource(R.string.customer_name_label))
                     )
                 }
             )

@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -41,7 +40,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -65,10 +63,13 @@ import com.riza0004.checkmymarket.viewmodel.ProductViewModel
 @SuppressLint("StateFlowValueCalledInComposition")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainHomeScreen(navHostController: NavHostController){
+fun MainHomeScreen(
+    navHostController: NavHostController,
+    productViewModel: ProductViewModel? = null
+){
     val context = LocalContext.current
     val factory = ViewModelFactory(context)
-    val viewModel: ProductViewModel = viewModel(factory = factory)
+    val viewModel: ProductViewModel = productViewModel?: viewModel(factory = factory)
     var expanded by remember { mutableStateOf(false) }
     val cart by viewModel.cart.collectAsState()
     Scaffold(
@@ -136,7 +137,9 @@ fun MainHomeScreen(navHostController: NavHostController){
             if(cart.isNotEmpty()){
                 Box {
                     FloatingActionButton(
-                        onClick = { /* handle click */ }
+                        onClick = {
+                            navHostController.navigate(Screen.Cart.route)
+                        }
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.baseline_add_shopping_cart_24),
@@ -227,7 +230,6 @@ fun ProductListHome(
     cart: List<CartDataClass>,
     onClick: (id: Long) -> Unit
 ){
-    val context = LocalContext.current
     Card(
         modifier = Modifier.fillMaxWidth().clickable { onClick(product.id) },
         colors = CardDefaults.cardColors(
@@ -305,7 +307,6 @@ fun ProductListHome(
                 IconButton(
                     onClick = {
                         viewModel.addToCart(product = product, 1)
-                        Toast.makeText(context, "add to cart", Toast.LENGTH_SHORT).show()
                     },
                     colors = IconButtonDefaults.iconButtonColors(
                         containerColor = MaterialTheme.colorScheme.onPrimaryContainer,
