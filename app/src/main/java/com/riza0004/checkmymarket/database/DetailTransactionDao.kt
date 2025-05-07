@@ -13,8 +13,8 @@ interface DetailTransactionDao {
     @Insert
     suspend fun insertListTransaction(detailTransaction: DetailTransactionDataClass)
 
-    @Query("SELECT * FROM `detailTransaction`")
-    fun getDetailTransaction(): Flow<List<DetailTransactionDataClass>>
+    @Query("SELECT * FROM `detailTransaction` WHERE transactionId = :id")
+    fun getDetailTransaction(id:Long): Flow<List<DetailTransactionDataClass>>
 
     @Query("SELECT * FROM `detailTransaction` WHERE id = :id")
     suspend fun getDetailTransactionById(id:Long): DetailTransactionDataClass?

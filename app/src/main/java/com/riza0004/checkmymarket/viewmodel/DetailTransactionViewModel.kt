@@ -13,40 +13,33 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class DetailTransactionViewModel(private val dao: DetailTransactionDao):ViewModel() {
-    val data: StateFlow<List<DetailTransactionDataClass>> = dao.getDetailTransaction().stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(),
-        initialValue = emptyList()
-    )
+    fun getDetailTransactionById(id:Long): StateFlow<List<DetailTransactionDataClass>>{
+        return dao.getDetailTransaction(id).stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(),
+            initialValue = emptyList()
+        )
+    }
 
     fun insert(
         idTransaction: Long,
         cart: List<CartDataClass>
         ){
-        cart.map{
-            val detailTransaction = DetailTransactionDataClass(
-                transactionId = idTransaction,
-                qty = it.qty,
-                productId = it.product.id
-            )
-            val product = ProductDataClass(
-                id = it.product.id,
-                name = it.product.name,
-                price = it.product.price,
-                stock = it.product.stock - it.qty,
-                onInsert = it.product.onInsert,
-                onUpdate = it.product.onUpdate
-            )
-            viewModelScope.launch {
+        viewModelScope.launch {
+            for (it in cart) {
+                val detailTransaction = DetailTransactionDataClass(
+                    transactionId = idTransaction,
+                    qty = it.qty,
+                    productId = it.product.id
+                )
+                val product = it.product.copy(
+                    stock = it.product.stock - it.qty
+                )
+
                 dao.insertListTransaction(detailTransaction)
                 dao.updateProduct(product)
             }
-
-
         }
-    }
-    suspend fun getDetailTransaction(id:Long): DetailTransactionDataClass?{
-        return dao.getDetailTransactionById(id)
     }
 
     fun getProductById(id:Long): Flow<ProductDataClass?> {

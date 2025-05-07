@@ -81,8 +81,14 @@
     <string name="success_cart_purchase_dialog_title">Purchase Successful</string>
 
 <!--    Transaction List Screen-->
+    <string name="id_transaction">ID: %1$d</string>
+    <string name="customer_name">Customer: %1$s</string>
     <string name="transaction_screen">Transactions</string>
     <string name="empty_data_transaction">Data transactions still empty</string>
+
+<!--    DetailTransaction List Screen-->
+    <string name="detail_transaction_screen">Details Transaction</string>
+    <string name="products_num">%1$d Products</string>
 
 <!--    error message-->
     <string name="error_message_with_label">Please fill the %1$s field first</string>

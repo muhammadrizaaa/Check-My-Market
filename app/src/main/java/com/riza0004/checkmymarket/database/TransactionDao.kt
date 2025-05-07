@@ -19,7 +19,7 @@ interface TransactionDao {
     fun getTransactionAsc(): Flow<List<TransactionDataClass>>
 
     @Query("SELECT * FROM `transaction` WHERE id = :id")
-    suspend fun getTransactionById(id:Long): TransactionDataClass?
+    fun getTransactionById(id:Long): Flow<TransactionDataClass?>
 
     @Query("SELECT * FROM customer WHERE id = :id")
     fun getCustomer(id: Long): Flow<CustomerDataClass?>

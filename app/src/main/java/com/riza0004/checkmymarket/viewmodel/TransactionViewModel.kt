@@ -22,7 +22,7 @@ class TransactionViewModel(private val dao: TransactionDao):ViewModel() {
     )
     private val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US)
 
-    suspend fun getTransaction(id: Long): TransactionDataClass?{
+    fun getTransaction(id: Long): Flow<TransactionDataClass?>{
         return dao.getTransactionById(id)
     }
 

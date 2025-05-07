@@ -11,9 +11,11 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.riza0004.checkmymarket.ui.screen.KEY_ID_Customer
 import com.riza0004.checkmymarket.ui.screen.KEY_ID_PRODUCT
+import com.riza0004.checkmymarket.ui.screen.KEY_ID_TRANSACTION
 import com.riza0004.checkmymarket.ui.screen.MainAddCustomerScreen
 import com.riza0004.checkmymarket.ui.screen.MainAddProductScreen
 import com.riza0004.checkmymarket.ui.screen.MainCartScreen
+import com.riza0004.checkmymarket.ui.screen.MainDetailTransactionScreen
 import com.riza0004.checkmymarket.ui.screen.MainHomeScreen
 import com.riza0004.checkmymarket.ui.screen.MainListCustomerScreen
 import com.riza0004.checkmymarket.ui.screen.MainListProductScreen
@@ -85,6 +87,15 @@ fun SetupNavGraph(navHostController: NavHostController = rememberNavController()
             route = Screen.Transaction.route
         ){
             MainListTransactionScreen(navHostController)
+        }
+        composable(
+            route = Screen.DetailTransaction.route,
+            arguments = listOf(
+                navArgument(KEY_ID_TRANSACTION) {type = NavType.LongType}
+            )
+        ) {navBackStackEntry ->
+            val id = navBackStackEntry.arguments?.getLong(KEY_ID_TRANSACTION)
+            MainDetailTransactionScreen(navHostController, id?:0)
         }
     }
 }

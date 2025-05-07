@@ -37,6 +37,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.riza0004.checkmymarket.R
 import com.riza0004.checkmymarket.dataclass.TransactionDataClass
+import com.riza0004.checkmymarket.navigation.Screen
 import com.riza0004.checkmymarket.ui.theme.CheckMyMarketTheme
 import com.riza0004.checkmymarket.util.ViewModelFactory
 import com.riza0004.checkmymarket.viewmodel.TransactionViewModel
@@ -106,7 +107,9 @@ fun TransactionScreenContent(
                 ListTransaction(
                     customerName = viewModel.getCustomer(it.idCustomer).collectAsState(null).value?.name?: "",
                     transaction = it,
-                    onClick = {}
+                    onClick = {
+                        navHostController.navigate(Screen.DetailTransaction.withId(it.id))
+                    }
                 )
             }
         }
@@ -138,11 +141,11 @@ fun ListTransaction(
                 horizontalAlignment = Alignment.Start
             ) {
                 Text(
-                    text = "${transaction.id}",
+                    text = stringResource(R.string.id_transaction, transaction.id),
                     style = MaterialTheme.typography.labelMedium
                 )
                 Text(
-                    text = customerName,
+                    text = stringResource(R.string.customer_name, customerName),
                     style = MaterialTheme.typography.titleMedium,
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 1
