@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.riza0004.checkmymarket.database.TransactionDao
 import com.riza0004.checkmymarket.dataclass.CustomerDataClass
 import com.riza0004.checkmymarket.dataclass.TransactionDataClass
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -25,7 +26,7 @@ class TransactionViewModel(private val dao: TransactionDao):ViewModel() {
         return dao.getTransactionById(id)
     }
 
-    suspend fun getCustomer(id:Long): CustomerDataClass?{
+    fun getCustomer(id:Long): Flow<CustomerDataClass?> {
         return dao.getCustomer(id)
     }
 

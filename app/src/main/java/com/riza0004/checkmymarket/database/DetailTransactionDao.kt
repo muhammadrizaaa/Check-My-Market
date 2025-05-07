@@ -20,7 +20,7 @@ interface DetailTransactionDao {
     suspend fun getDetailTransactionById(id:Long): DetailTransactionDataClass?
 
     @Query("SELECT * FROM product WHERE id = :id")
-    suspend fun getProduct(id: Long): ProductDataClass?
+    fun getProduct(id: Long): Flow<ProductDataClass?>
 
     @Update
     suspend fun updateProduct(product: ProductDataClass)

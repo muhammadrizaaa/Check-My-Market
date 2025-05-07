@@ -80,6 +80,10 @@
     <string name="close_btn">Close</string>
     <string name="success_cart_purchase_dialog_title">Purchase Successful</string>
 
+<!--    Transaction List Screen-->
+    <string name="transaction_screen">Transactions</string>
+    <string name="empty_data_transaction">Data transactions still empty</string>
+
 <!--    error message-->
     <string name="error_message_with_label">Please fill the %1$s field first</string>
     <string name="error_message_without_label">Please fill the empty field first</string>

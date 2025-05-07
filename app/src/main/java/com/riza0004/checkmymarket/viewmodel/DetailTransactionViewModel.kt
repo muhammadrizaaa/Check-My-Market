@@ -6,6 +6,7 @@ import com.riza0004.checkmymarket.database.DetailTransactionDao
 import com.riza0004.checkmymarket.dataclass.CartDataClass
 import com.riza0004.checkmymarket.dataclass.DetailTransactionDataClass
 import com.riza0004.checkmymarket.dataclass.ProductDataClass
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -48,7 +49,7 @@ class DetailTransactionViewModel(private val dao: DetailTransactionDao):ViewMode
         return dao.getDetailTransactionById(id)
     }
 
-    suspend fun getProductById(id:Long):ProductDataClass?{
+    fun getProductById(id:Long): Flow<ProductDataClass?> {
         return dao.getProduct(id)
     }
 }

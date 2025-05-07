@@ -2,6 +2,7 @@ package com.riza0004.checkmymarket.navigation
 
 import com.riza0004.checkmymarket.ui.screen.KEY_ID_Customer
 import com.riza0004.checkmymarket.ui.screen.KEY_ID_PRODUCT
+import com.riza0004.checkmymarket.ui.screen.KEY_ID_TRANSACTION
 
 sealed class Screen(val route: String) {
     data object Home: Screen("homeScreen")
@@ -16,4 +17,8 @@ sealed class Screen(val route: String) {
         fun withId(id: Long) = "detailCustomerScreen/$id"
     }
     data object Cart: Screen("cartScreen")
+    data object Transaction: Screen("transactionScreen")
+    data object DetailTransaction: Screen("detailTransactionScreen/{$KEY_ID_TRANSACTION}"){
+        fun withId(id: Long) = "detailTransactionScreen/$id"
+    }
 }

@@ -17,6 +17,7 @@ import com.riza0004.checkmymarket.ui.screen.MainCartScreen
 import com.riza0004.checkmymarket.ui.screen.MainHomeScreen
 import com.riza0004.checkmymarket.ui.screen.MainListCustomerScreen
 import com.riza0004.checkmymarket.ui.screen.MainListProductScreen
+import com.riza0004.checkmymarket.ui.screen.MainListTransactionScreen
 import com.riza0004.checkmymarket.util.ViewModelFactory
 import com.riza0004.checkmymarket.viewmodel.ProductViewModel
 
@@ -79,6 +80,11 @@ fun SetupNavGraph(navHostController: NavHostController = rememberNavController()
                 productViewModel = viewModel,
                 navHostController = navHostController
             )
+        }
+        composable(
+            route = Screen.Transaction.route
+        ){
+            MainListTransactionScreen(navHostController)
         }
     }
 }

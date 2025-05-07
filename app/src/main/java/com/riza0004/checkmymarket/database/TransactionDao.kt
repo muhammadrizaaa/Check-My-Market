@@ -22,5 +22,5 @@ interface TransactionDao {
     suspend fun getTransactionById(id:Long): TransactionDataClass?
 
     @Query("SELECT * FROM customer WHERE id = :id")
-    suspend fun getCustomer(id: Long): CustomerDataClass?
+    fun getCustomer(id: Long): Flow<CustomerDataClass?>
 }
