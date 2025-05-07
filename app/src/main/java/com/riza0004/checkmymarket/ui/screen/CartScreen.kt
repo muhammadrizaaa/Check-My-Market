@@ -51,12 +51,15 @@ import androidx.navigation.compose.rememberNavController
 import com.riza0004.checkmymarket.R
 import com.riza0004.checkmymarket.dataclass.CartDataClass
 import com.riza0004.checkmymarket.dataclass.CustomerDataClass
+import com.riza0004.checkmymarket.navigation.Screen
 import com.riza0004.checkmymarket.ui.component.CartDialog
 import com.riza0004.checkmymarket.ui.component.OneBtnDialog
 import com.riza0004.checkmymarket.ui.theme.CheckMyMarketTheme
 import com.riza0004.checkmymarket.util.ViewModelFactory
 import com.riza0004.checkmymarket.viewmodel.CustomerViewModel
+import com.riza0004.checkmymarket.viewmodel.DetailTransactionViewModel
 import com.riza0004.checkmymarket.viewmodel.ProductViewModel
+import com.riza0004.checkmymarket.viewmodel.TransactionViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -67,10 +70,15 @@ fun MainCartScreen(
     val context = LocalContext.current
     val factory = ViewModelFactory(context)
     val viewModel: ProductViewModel = productViewModel?:viewModel(factory = factory)
+    val cart by viewModel.cart.collectAsState()
+    val transactionViewModel: TransactionViewModel = viewModel(factory = factory)
+    val detailTransactionViewModel: DetailTransactionViewModel = viewModel(factory = factory)
     var showDialog by remember { mutableStateOf(false) }
     var dialogType by remember { mutableIntStateOf(0) }
     var cashGiven by remember { mutableStateOf("") }
     var cashGivenIsErr by remember { mutableStateOf(false) }
+    var selectedCustomer by remember { mutableStateOf<CustomerDataClass?>(null) }
+    var customerIsErr by remember { mutableStateOf(false) }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -109,8 +117,9 @@ fun MainCartScreen(
                     }
                     IconButton(
                         onClick = {
+                            customerIsErr = selectedCustomer == null
                             cashGivenIsErr = cashGiven.isBlank()
-                            if(!cashGivenIsErr){
+                            if(!cashGivenIsErr && !customerIsErr){
                                 if( cashGiven.toLong() >= viewModel.cart.value.sumOf { it.totalPrice }){
                                     showDialog = true
                                     dialogType = 1
@@ -138,14 +147,31 @@ fun MainCartScreen(
             isErr = cashGivenIsErr,
             onValueChange = {
                 cashGiven = it
+            },
+            customerIsErr = customerIsErr,
+            selectedCustomer = selectedCustomer,
+            onCLick = {
+                selectedCustomer = it
+            },
+            clickToAddCustomer = {
+                navHostController.navigate(Screen.AddCustomer.route)
             }
-
         )
         if(showDialog){
             when (dialogType) {
                 1 -> CartDialog(
                     onDismissReq = { showDialog = false },
                     onConfirmation = {
+                        transactionViewModel.insert(
+                            idCustomer = selectedCustomer?.id?:1,
+                            price = cart.sumOf { it.totalPrice.toLong() },
+                            onSuccess = {
+                                detailTransactionViewModel.insert(
+                                    idTransaction = it,
+                                    cart = cart
+                                )
+                            }
+                        )
                         dialogType = 3
                     },
                     title = stringResource(R.string.cart_purchase_dialog_title),
@@ -184,7 +210,11 @@ fun CartScreenContent(
     productViewModel: ProductViewModel,
     value: String,
     isErr: Boolean,
-    onValueChange: (String) ->Unit
+    onValueChange: (String) ->Unit,
+    selectedCustomer: CustomerDataClass?,
+    customerIsErr: Boolean,
+    onCLick: (CustomerDataClass) -> Unit,
+    clickToAddCustomer: () -> Unit
 ){
     val context = LocalContext.current
     val factory = ViewModelFactory(context)
@@ -192,7 +222,6 @@ fun CartScreenContent(
     val customers by customerViewModel.data.collectAsState()
     val cart by productViewModel.cart.collectAsState()
     val totalPrice = cart.sumOf { it.totalPrice }
-    var selectedCustomer by remember { mutableStateOf<CustomerDataClass?>(null) }
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -213,9 +242,11 @@ fun CartScreenContent(
                 modifier = Modifier.padding(start = 8.dp),
                 selectedCustomer = selectedCustomer,
                 customers = customers,
-                onClick = {customer->
-                    selectedCustomer = customer
-                }
+                onClick = {
+                    onCLick(it)
+                },
+                clickToAddCustomer = clickToAddCustomer,
+                isErr = customerIsErr
             )
             Text(
                 text = "${stringResource(R.string.list_product_screen)}: ",
@@ -238,6 +269,7 @@ fun CartScreenContent(
                 modifier = Modifier.padding(start = 8.dp)
             )
             OutlinedTextField(
+                modifier = Modifier.padding(start = 8.dp),
                 value = value,
                 onValueChange = onValueChange,
                 label = {
@@ -315,12 +347,14 @@ fun SelectUserInCart(
     modifier: Modifier = Modifier,
     selectedCustomer: CustomerDataClass?,
     onClick: (CustomerDataClass) -> Unit,
-    customers: List<CustomerDataClass>
+    customers: List<CustomerDataClass>,
+    clickToAddCustomer: () -> Unit,
+    isErr: Boolean
 ){
     var expanded by remember { mutableStateOf(false) }
     Card(
         modifier = modifier
-            .clickable { expanded = true },
+            .clickable { expanded = !expanded },
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.secondaryContainer,
             contentColor = MaterialTheme.colorScheme.onSecondaryContainer
@@ -359,6 +393,22 @@ fun SelectUserInCart(
             onDismissRequest = {expanded = false},
             containerColor = MaterialTheme.colorScheme.secondaryContainer
         ) {
+            DropdownMenuItem(
+                text = {
+                    Text(
+                        text = stringResource(R.string.add_customer),
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                },
+                onClick = {
+                    clickToAddCustomer()
+                    expanded = false
+                },
+                colors = MenuDefaults.itemColors(
+                    textColor = MaterialTheme.colorScheme.onSecondaryContainer
+                )
+            )
             customers.forEach {customer->
                 DropdownMenuItem(
                     text = {
@@ -378,6 +428,14 @@ fun SelectUserInCart(
                 )
             }
         }
+    }
+    if(isErr){
+        Text(
+            modifier = Modifier.padding(start = 24.dp),
+            text = stringResource(R.string.error_message_with_label, stringResource(R.string.add_customer)),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.error
+        )
     }
 }
 

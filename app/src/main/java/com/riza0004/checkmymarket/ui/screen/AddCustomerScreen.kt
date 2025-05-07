@@ -119,7 +119,7 @@ fun MainAddCustomerScreen(navHostController: NavHostController, id: Long? = null
                             tint = MaterialTheme.colorScheme.primary
                         )
                     }
-                    if(id!=null){
+                    if(id!=null && id!=1L){
                         ShowDelete {
                             showDialog = true
                         }
