@@ -26,6 +26,7 @@
 <!--    EditProductScreen-->
     <string name="edit_product">Edit Product</string>
     <string name="product_edited">Product Successfully Edited!</string>
+    <string name="add_stock">Add Stock</string>
 
 <!--    DeleteDialog-->
     <string name="delete_msg">Are you sure you want to delete %1$s?</string>

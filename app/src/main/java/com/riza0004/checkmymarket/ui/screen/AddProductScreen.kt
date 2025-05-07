@@ -60,6 +60,7 @@ fun MainAddProductScreen(navHostController: NavHostController, id:Long? = null){
     var productPriceIsErr by remember { mutableStateOf(false) }
     var productStockIsErr by remember { mutableStateOf(false) }
     var showDialog by remember { mutableStateOf(false) }
+    var addStock by remember { mutableStateOf("0") }
     LaunchedEffect(Unit) {
         if(id==null)return@LaunchedEffect
         val data = viewModel.getProduct(id) ?: return@LaunchedEffect
@@ -112,7 +113,7 @@ fun MainAddProductScreen(navHostController: NavHostController, id:Long? = null){
                                         name = productName,
                                         desc = productDesc,
                                         price = productPrice.toInt(),
-                                        stock = productStock.toLong(),
+                                        stock = productStock.toLong() + addStock.toLong(),
                                         onInsert = onInsert
                                     )
                                     Toast.makeText(context, R.string.product_edited, Toast.LENGTH_SHORT).show()
@@ -209,9 +210,23 @@ fun MainAddProductScreen(navHostController: NavHostController, id:Long? = null){
                 },
                 onValueChange = {productDesc = it},
                 keyboardOptions = KeyboardOptions(
-                    imeAction = ImeAction.Done
+                    imeAction = if (id==null) ImeAction.Done else ImeAction.Next
                 )
             )
+            if(id != null){
+                OutlinedTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = addStock,
+                    label = {
+                        Text(stringResource(R.string.add_stock))
+                    },
+                    onValueChange = {addStock = it},
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Done
+                    )
+                )
+            }
         }
         if(showDialog && id!=null){
             DeleteDialog(
