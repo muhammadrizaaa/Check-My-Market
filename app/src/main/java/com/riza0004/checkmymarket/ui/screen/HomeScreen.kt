@@ -268,6 +268,7 @@ fun ProductListHome(
                         cart.find { it.product.id == product.id }
                     }
                 }
+                val qty = singleCart?.qty ?: 0
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
@@ -286,38 +287,42 @@ fun ProductListHome(
                             contentDescription = stringResource(R.string.minus_button)
                         )
                     }
-                    Text("${singleCart?.qty ?: 0}")
+                    Text("$qty")
+                    if(qty < product.stock.toInt()){
+                        IconButton(
+                            modifier = Modifier.size(24.dp),
+                            onClick = {viewModel.plusQtyCart(product)},
+                            colors = IconButtonDefaults.iconButtonColors(
+                                containerColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                contentColor = MaterialTheme.colorScheme.primaryContainer
+                            )
+                        ) {
+                            Icon(
+                                modifier = Modifier.size(16.dp),
+                                painter = painterResource(R.drawable.baseline_add_24),
+                                contentDescription = stringResource(R.string.plus_button)
+                            )
+                        }
+                    }
+                }
+            }
+            else{
+                if(product.stock > 0L){
                     IconButton(
-                        modifier = Modifier.size(24.dp),
-                        onClick = {viewModel.plusQtyCart(product)},
+                        onClick = {
+                            viewModel.addToCart(product = product, 1)
+                        },
                         colors = IconButtonDefaults.iconButtonColors(
                             containerColor = MaterialTheme.colorScheme.onPrimaryContainer,
                             contentColor = MaterialTheme.colorScheme.primaryContainer
                         )
                     ) {
                         Icon(
-                            modifier = Modifier.size(16.dp),
                             painter = painterResource(R.drawable.baseline_add_24),
-                            contentDescription = stringResource(R.string.plus_button)
+                            contentDescription = stringResource(R.string.add_to_cart),
+                            Modifier.size(32.dp)
                         )
                     }
-                }
-            }
-            else{
-                IconButton(
-                    onClick = {
-                        viewModel.addToCart(product = product, 1)
-                    },
-                    colors = IconButtonDefaults.iconButtonColors(
-                        containerColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                        contentColor = MaterialTheme.colorScheme.primaryContainer
-                    )
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.baseline_add_24),
-                        contentDescription = stringResource(R.string.add_to_cart),
-                        Modifier.size(32.dp)
-                    )
                 }
             }
         }
