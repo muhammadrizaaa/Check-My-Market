@@ -14,6 +14,8 @@
     <string name="fab_cart">Floating Action Button to Cart screen</string>
     <string name="minus_button">Minus Button</string>
     <string name="plus_button">Plus Button</string>
+    <string name="list_button">List</string>
+    <string name="grid_button">Grid</string>
 
 
 <!--    AddProductScreen-->

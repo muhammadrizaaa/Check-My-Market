@@ -3,6 +3,7 @@ package com.riza0004.checkmymarket.ui.screen
 import android.annotation.SuppressLint
 import android.content.res.Configuration
 import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -16,9 +17,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -197,16 +202,29 @@ fun HomeScreenContent(
     cart: List<CartDataClass>
 ){
     val data by viewModel.data.collectAsState()
+    var isList by remember { mutableStateOf(true) }
     Column(
         modifier = modifier.fillMaxSize().padding(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
-        Text(
-            text = stringResource(R.string.products_list),
-            style = MaterialTheme.typography.headlineLarge,
-            fontWeight = FontWeight.Bold
-        )
+        IconButton(
+            modifier = Modifier.align(Alignment.End),
+            onClick = {isList = !isList}
+        ) {
+            if(isList){
+                Icon(
+                    painter = painterResource(R.drawable.baseline_view_list_24),
+                    contentDescription = stringResource(R.string.list_button)
+                )
+            }
+            else{
+                Icon(
+                    painter = painterResource(R.drawable.baseline_grid_view_24),
+                    contentDescription = stringResource(R.string.grid_button)
+                )
+            }
+        }
         if(data.isEmpty()){
             Text(
                 text = stringResource(R.string.empty_data_product),
@@ -215,16 +233,36 @@ fun HomeScreenContent(
             )
         }
         else{
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(data){data->
-                    ProductListHome(
-                        product = data,
-                        viewModel = viewModel,
-                        cart = cart
+            if(isList){
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(data){data->
+                        ProductListHome(
+                            product = data,
+                            viewModel = viewModel,
+                            cart = cart
                         ){id->
-                        navHostController.navigate(Screen.DetailProduct.withId(id))
+                            navHostController.navigate(Screen.DetailProduct.withId(id))
+                        }
+                    }
+                }
+            }
+            else{
+                LazyVerticalStaggeredGrid(
+                    modifier = Modifier.fillMaxSize(),
+                    columns = StaggeredGridCells.Fixed(2),
+                    verticalItemSpacing = 8.dp,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    items(data){data->
+                        ProductGridHome(
+                            product = data,
+                            viewModel = viewModel,
+                            cart = cart
+                        ) {id->
+                            navHostController.navigate(Screen.DetailProduct.withId(id))
+                        }
                     }
                 }
             }
@@ -331,6 +369,116 @@ fun ProductListHome(
                             contentDescription = stringResource(R.string.add_to_cart),
                             Modifier.size(32.dp)
                         )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun ProductGridHome(
+    product: ProductDataClass,
+    viewModel: ProductViewModel,
+    cart: List<CartDataClass>,
+    onClick: (id: Long) -> Unit
+){
+    Card(
+        modifier = Modifier.fillMaxWidth().clickable { onClick(product.id) },
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer
+        ),
+        border = BorderStroke(1.dp, DividerDefaults.color)
+    ){
+        Column(
+            modifier = Modifier.fillMaxSize().padding(8.dp)
+        ) {
+            Text(
+                text = product.name,
+                style = MaterialTheme.typography.titleMedium,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
+            Row(
+                modifier = Modifier.fillMaxSize(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column(
+                    modifier = Modifier.weight(1f),
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    Text(
+                        text = stringResource(R.string.price_format, product.price),
+                        style = MaterialTheme.typography.titleSmall
+                    )
+                    Text(
+                        text = stringResource(R.string.stock_product, product.stock),
+                        style = MaterialTheme.typography.bodySmall,
+                        maxLines = 2
+                    )
+                }
+                if(cart.any{it.product == product}){
+                    val singleCart by remember(cart) {
+                        derivedStateOf {
+                            cart.find { it.product.id == product.id }
+                        }
+                    }
+                    val qty = singleCart?.qty ?: 0
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        IconButton(
+                            modifier = Modifier.size(24.dp),
+                            onClick = {viewModel.minQtyCart(product)},
+                            colors = IconButtonDefaults.iconButtonColors(
+                                containerColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                contentColor = MaterialTheme.colorScheme.primaryContainer
+                            )
+                        ) {
+                            Icon(
+                                modifier = Modifier.size(16.dp),
+                                painter = painterResource(R.drawable.baseline_remove_24),
+                                contentDescription = stringResource(R.string.minus_button)
+                            )
+                        }
+                        Text("$qty")
+                        if(qty < product.stock.toInt()){
+                            IconButton(
+                                modifier = Modifier.size(24.dp),
+                                onClick = {viewModel.plusQtyCart(product)},
+                                colors = IconButtonDefaults.iconButtonColors(
+                                    containerColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                    contentColor = MaterialTheme.colorScheme.primaryContainer
+                                )
+                            ) {
+                                Icon(
+                                    modifier = Modifier.size(16.dp),
+                                    painter = painterResource(R.drawable.baseline_add_24),
+                                    contentDescription = stringResource(R.string.plus_button)
+                                )
+                            }
+                        }
+                    }
+                }
+                else{
+                    if(product.stock > 0L){
+                        IconButton(
+                            onClick = {
+                                viewModel.addToCart(product = product, 1)
+                            },
+                            colors = IconButtonDefaults.iconButtonColors(
+                                containerColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                contentColor = MaterialTheme.colorScheme.primaryContainer
+                            )
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.baseline_add_24),
+                                contentDescription = stringResource(R.string.add_to_cart),
+                                Modifier.size(24.dp)
+                            )
+                        }
                     }
                 }
             }
