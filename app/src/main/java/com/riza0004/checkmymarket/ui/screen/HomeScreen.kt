@@ -62,8 +62,12 @@ import com.riza0004.checkmymarket.dataclass.CartDataClass
 import com.riza0004.checkmymarket.dataclass.ProductDataClass
 import com.riza0004.checkmymarket.navigation.Screen
 import com.riza0004.checkmymarket.ui.theme.CheckMyMarketTheme
+import com.riza0004.checkmymarket.util.SettingDataStore
 import com.riza0004.checkmymarket.util.ViewModelFactory
 import com.riza0004.checkmymarket.viewmodel.ProductViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -202,7 +206,8 @@ fun HomeScreenContent(
     cart: List<CartDataClass>
 ){
     val data by viewModel.data.collectAsState()
-    var isList by remember { mutableStateOf(true) }
+    val dataStore = SettingDataStore(LocalContext.current)
+    val isList by dataStore.layoutFlow.collectAsState(true)
     Column(
         modifier = modifier.fillMaxSize().padding(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -210,7 +215,11 @@ fun HomeScreenContent(
     ) {
         IconButton(
             modifier = Modifier.align(Alignment.End),
-            onClick = {isList = !isList}
+            onClick = {
+                CoroutineScope(Dispatchers.IO).launch {
+                    dataStore.saveLayout(isList = !isList)
+                }
+            }
         ) {
             if(isList){
                 Icon(
