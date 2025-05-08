@@ -106,6 +106,7 @@ fun TransactionScreenContent(
             items(data){
                 ListTransaction(
                     customerName = viewModel.getCustomer(it.idCustomer).collectAsState(null).value?.name?: "",
+                    customerPhone = viewModel.getCustomer(it.idCustomer).collectAsState(null).value?.phoneNum?: "",
                     transaction = it,
                     onClick = {
                         navHostController.navigate(Screen.DetailTransaction.withId(it.id))
@@ -120,6 +121,7 @@ fun TransactionScreenContent(
 fun ListTransaction(
     onClick: () -> Unit,
     customerName: String,
+    customerPhone: String,
     transaction: TransactionDataClass
 ){
     Card(
@@ -130,35 +132,36 @@ fun ListTransaction(
             containerColor = MaterialTheme.colorScheme.primaryContainer
         )
     ) {
-        Row(
+        Column(
             modifier = Modifier
                 .padding(8.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.Top,
-            horizontalArrangement = Arrangement.SpaceBetween
+                .fillMaxSize(),
         ) {
-            Column(
-                horizontalAlignment = Alignment.Start
-            ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ){
                 Text(
                     text = stringResource(R.string.id_transaction, transaction.id),
                     style = MaterialTheme.typography.labelMedium
                 )
                 Text(
-                    text = stringResource(R.string.customer_name, customerName),
-                    style = MaterialTheme.typography.titleMedium,
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 1
-                )
-                Text(
-                    text = stringResource(R.string.total_price, transaction.price),
-                    style = MaterialTheme.typography.titleMedium
+                    text = transaction.timeStamp,
+                    textAlign = TextAlign.End,
+                    style = MaterialTheme.typography.labelMedium
                 )
             }
             Text(
-                text = transaction.timeStamp,
-                textAlign = TextAlign.End,
-                style = MaterialTheme.typography.bodyMedium
+                text = stringResource(R.string.customer_name, customerName) + " - $customerPhone",
+                style = MaterialTheme.typography.titleMedium,
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 2
+            )
+            Text(
+                text = stringResource(R.string.total_price, transaction.price),
+                style = MaterialTheme.typography.titleMedium
             )
         }
     }

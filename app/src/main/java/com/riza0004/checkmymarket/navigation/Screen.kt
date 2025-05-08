@@ -21,4 +21,5 @@ sealed class Screen(val route: String) {
     data object DetailTransaction: Screen("detailTransactionScreen/{$KEY_ID_TRANSACTION}"){
         fun withId(id: Long) = "detailTransactionScreen/$id"
     }
+    data object DeletedProduct: Screen("deletedProductScreen")
 }

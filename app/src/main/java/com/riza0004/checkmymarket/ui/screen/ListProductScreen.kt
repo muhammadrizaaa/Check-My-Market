@@ -13,6 +13,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -25,12 +27,16 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -47,6 +53,7 @@ import com.riza0004.checkmymarket.viewmodel.ProductViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainListProductScreen(navHostController: NavHostController){
+    var expanded by remember { mutableStateOf(false) }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -68,6 +75,30 @@ fun MainListProductScreen(navHostController: NavHostController){
                             painter = painterResource(R.drawable.baseline_arrow_back_ios_new_24),
                             contentDescription = stringResource(R.string.back_button)
                         )
+                    }
+                },
+                actions = {
+                    IconButton(
+                        onClick = {expanded = !expanded}
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.baseline_more_vert_24),
+                            contentDescription = stringResource(R.string.more)
+                        )
+                        DropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false }
+                        ) {
+                            DropdownMenuItem(
+                                text = {
+                                    Text(stringResource(R.string.deleted_product_screen))
+                                },
+                                onClick = {
+                                    expanded = false
+                                    navHostController.navigate(Screen.DeletedProduct.route)
+                                }
+                            )
+                        }
                     }
                 }
             )
@@ -139,46 +170,52 @@ fun ListProduct(product: ProductDataClass, onClick: (id:Long) -> Unit){
             containerColor = MaterialTheme.colorScheme.primaryContainer
         )
     ) {
-        Row(
-            modifier = Modifier.padding(8.dp).fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Absolute.SpaceBetween
+        Column(
+            modifier = Modifier.padding(8.dp).fillMaxSize()
         ) {
-            Column {
-                Text(
-                    product.name,
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Medium,
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 1
-                )
-                Text(
-                    product.desc,
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Medium,
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 3
-                )
-                Text(
-                    stringResource(R.string.stock_product, product.stock),
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Medium
-                )
-                Text(
-                    product.price.toString(),
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Medium
-                )
-                Text(
-                    stringResource(R.string.onInsert_product, product.onInsert),
-                    style = MaterialTheme.typography.bodySmall,
-                    fontWeight = FontWeight.Thin
-                )
-                Text(
-                    stringResource(R.string.onUpdate_product, product.onUpdate),
-                    style = MaterialTheme.typography.bodySmall,
-                    fontWeight = FontWeight.Thin
-                )
+            Text(
+                product.name,
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Medium,
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 2
+            )
+            Text(
+                product.desc,
+                style = MaterialTheme.typography.bodyMedium,
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 3
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.Bottom,
+                horizontalArrangement = Arrangement.Absolute.SpaceBetween
+            ) {
+                Column {
+                    Text(
+                        stringResource(R.string.price_format, product.price),
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Medium
+                    )
+                    Text(
+                        stringResource(R.string.stock_product, product.stock),
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
+                Column {
+                    Text(
+                        stringResource(R.string.onInsert_product, product.onInsert),
+                        style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.Thin,
+                        textAlign = TextAlign.End
+                    )
+                    Text(
+                        stringResource(R.string.onUpdate_product, product.onUpdate),
+                        style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.Thin,
+                        textAlign = TextAlign.End
+                    )
+                }
             }
         }
     }

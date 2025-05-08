@@ -4,14 +4,12 @@ import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -88,21 +86,25 @@ fun MainDetailTransactionScreen(navHostController: NavHostController, id:Long){
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(innerPadding)
-                .padding(8.dp)
+                .padding(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.Top,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Column {
+                Column(modifier = Modifier.weight(1f)) {
                     Text(stringResource(R.string.id_transaction, transaction?.id?:1))
                     Text(
-                        stringResource(
+                        text = stringResource(
                         R.string.customer_name,
                         transactionViewModel.getCustomer(transaction?.idCustomer?:1)
                             .collectAsState(null).value?.name?:""
-                        )
+                        ) + "- ${transactionViewModel.getCustomer(transaction?.idCustomer?:1)
+                            .collectAsState(null).value?.phoneNum?:""}",
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
                 Column(
@@ -113,16 +115,18 @@ fun MainDetailTransactionScreen(navHostController: NavHostController, id:Long){
                         textAlign = TextAlign.End
                     )
                     Text(
-                        stringResource(R.string.price_format, transaction?.price?:0),
-                        textAlign = TextAlign.End
-                    )
-                    Text(
                         stringResource(R.string.products_num, detailTransaction.size)
                     )
                 }
             }
+            HorizontalDivider()
+            Text(
+                modifier = Modifier.padding(top = 16.dp),
+                text = stringResource(R.string.products_list),
+                style = MaterialTheme.typography.titleLarge
+            )
             LazyColumn(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.padding(start = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(detailTransaction){
@@ -130,8 +134,13 @@ fun MainDetailTransactionScreen(navHostController: NavHostController, id:Long){
                         detailTransaction = it,
                         detailTransactionViewModel = detailTransactionViewModel
                     )
+                    HorizontalDivider()
                 }
             }
+            Text(
+                modifier = Modifier.padding(start = 8.dp),
+                text = stringResource(R.string.total_price, transaction?.price?:0),
+            )
         }
     }
 }
@@ -143,11 +152,8 @@ fun ListDetailTransaction(
 ){
     val product = detailTransactionViewModel.getProductById(detailTransaction.productId).collectAsState(null).value
     val totalPrice = detailTransaction.qty*(product?.price?:0)
-    Card(
+    Column(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
-        )
     ) {
         Row(
             modifier = Modifier
@@ -163,7 +169,7 @@ fun ListDetailTransaction(
             }
             else{
                 Text(
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.weight(1f).padding(end = 8.dp),
                     text = if(product.isDeleted)"${product.name} (Deleted)" else product.name,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
@@ -172,9 +178,9 @@ fun ListDetailTransaction(
                     text = stringResource(R.string.price_format, product.price)
                 )
 
-                Text("X")
+                Text(" X ")
                 Text(
-                    text = "${detailTransaction.qty}:"
+                    text = "${detailTransaction.qty}: "
                 )
                 Text(
                     text = stringResource(R.string.price_format, totalPrice)

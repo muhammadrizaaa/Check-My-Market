@@ -22,7 +22,4 @@ interface ProductDao {
     @Query("SELECT * FROM product WHERE id = :id")
     suspend fun getProductById(id:Long): ProductDataClass?
 
-    @Query("DELETE FROM product WHERE id = :id")
-    suspend fun deleteProductById(id: Long)
-
 }

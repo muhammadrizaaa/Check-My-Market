@@ -15,6 +15,7 @@ import com.riza0004.checkmymarket.ui.screen.KEY_ID_TRANSACTION
 import com.riza0004.checkmymarket.ui.screen.MainAddCustomerScreen
 import com.riza0004.checkmymarket.ui.screen.MainAddProductScreen
 import com.riza0004.checkmymarket.ui.screen.MainCartScreen
+import com.riza0004.checkmymarket.ui.screen.MainDeletedProductScreen
 import com.riza0004.checkmymarket.ui.screen.MainDetailTransactionScreen
 import com.riza0004.checkmymarket.ui.screen.MainHomeScreen
 import com.riza0004.checkmymarket.ui.screen.MainListCustomerScreen
@@ -96,6 +97,11 @@ fun SetupNavGraph(navHostController: NavHostController = rememberNavController()
         ) {navBackStackEntry ->
             val id = navBackStackEntry.arguments?.getLong(KEY_ID_TRANSACTION)
             MainDetailTransactionScreen(navHostController, id?:0)
+        }
+        composable(
+            route = Screen.DeletedProduct.route
+        ){
+            MainDeletedProductScreen(navHostController)
         }
     }
 }

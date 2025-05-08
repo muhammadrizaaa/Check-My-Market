@@ -22,6 +22,11 @@ class ProductViewModel(private val dao: ProductDao):ViewModel() {
         started = SharingStarted.WhileSubscribed(),
         initialValue = emptyList()
     )
+    val deletedData: StateFlow<List<ProductDataClass>> = dao.getProduct(1).stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(),
+        initialValue = emptyList()
+    )
 
     private val _cart: MutableStateFlow<List<CartDataClass>> = MutableStateFlow(
         emptyList()
@@ -78,11 +83,6 @@ class ProductViewModel(private val dao: ProductDao):ViewModel() {
         }
     }
 
-    fun delete(id: Long){
-        viewModelScope.launch(Dispatchers.IO) {
-            dao.deleteProductById(id)
-        }
-    }
     fun addToCart(product: ProductDataClass, qty: Int){
         _cart.value += CartDataClass(
             num = (_cart.value.size + 1),
