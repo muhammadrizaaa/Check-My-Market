@@ -11,6 +11,7 @@ data class ProductDataClass(
     val price: Int,
     val stock: Long,
     val desc: String = "",
+    val isDeleted: Boolean = false,
     val onInsert: String,
     val onUpdate: String
 )

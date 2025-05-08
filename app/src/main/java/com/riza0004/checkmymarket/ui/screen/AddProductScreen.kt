@@ -232,7 +232,15 @@ fun MainAddProductScreen(navHostController: NavHostController, id:Long? = null){
             DeleteDialog(
                 onDismissReq = {showDialog = false},
                 onConfirmation = {
-                    viewModel.delete(id = id)
+                    viewModel.update(
+                        id = id,
+                        name = productName,
+                        desc = productDesc,
+                        price = productPrice.toInt(),
+                        stock = productStock.toLong(),
+                        onInsert = onInsert,
+                        isDeleted = true
+                    )
                     showDialog = false
                     navHostController.popBackStack()
                     Toast.makeText(context, R.string.product_deleted, Toast.LENGTH_SHORT).show()

@@ -16,8 +16,8 @@ interface ProductDao {
     @Update
     suspend fun updateProduct(product: ProductDataClass)
 
-    @Query("SELECT * FROM product ORDER BY name ASC")
-    fun getProduct():Flow<List<ProductDataClass>>
+    @Query("SELECT * FROM product WHERE isDeleted = :isDeleted ORDER BY name ASC")
+    fun getProduct(isDeleted: Int = 0):Flow<List<ProductDataClass>>
 
     @Query("SELECT * FROM product WHERE id = :id")
     suspend fun getProductById(id:Long): ProductDataClass?

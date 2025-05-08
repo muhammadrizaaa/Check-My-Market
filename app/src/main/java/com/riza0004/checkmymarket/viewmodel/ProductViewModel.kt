@@ -60,7 +60,8 @@ class ProductViewModel(private val dao: ProductDao):ViewModel() {
         desc: String,
         price: Int,
         stock: Long,
-        onInsert: String
+        onInsert: String,
+        isDeleted: Boolean = false
     ){
         val product = ProductDataClass(
             id = id,
@@ -68,6 +69,7 @@ class ProductViewModel(private val dao: ProductDao):ViewModel() {
             desc = desc,
             price = price,
             stock = stock,
+            isDeleted = isDeleted,
             onInsert = onInsert,
             onUpdate = formatter.format(Date())
         )

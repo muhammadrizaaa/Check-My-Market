@@ -21,7 +21,7 @@ import kotlin.concurrent.Volatile
         TransactionDataClass::class,
         DetailTransactionDataClass::class
     ],
-    version = 2,
+    version = 1,
     exportSchema = false
 )
 abstract class ProductDb:RoomDatabase(){

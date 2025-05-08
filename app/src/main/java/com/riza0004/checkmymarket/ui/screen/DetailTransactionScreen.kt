@@ -164,7 +164,7 @@ fun ListDetailTransaction(
             else{
                 Text(
                     modifier = Modifier.weight(1f),
-                    text = product.name,
+                    text = if(product.isDeleted)"${product.name} (Deleted)" else product.name,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
